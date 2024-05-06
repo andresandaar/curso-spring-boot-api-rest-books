@@ -1,0 +1,92 @@
+package com.company.books.backend.services.impl;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.company.books.backend.model.dao.ILibroDao;
+import com.company.books.backend.model.entity.Libro;
+import com.company.books.backend.response.LibroResponseRest;
+import com.company.books.backend.services.ILibroService;
+
+@Service
+public class LibroImplService implements ILibroService {
+    private static final Logger Log = LoggerFactory.getLogger(LibroImplService.class);
+
+    @Autowired
+    private ILibroDao libroDao;
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<LibroResponseRest> getLibros() {
+
+        Log.info("Inicio metodo buscarLibros()");
+        LibroResponseRest response = new LibroResponseRest();
+
+        try {
+            List<Libro> libros = (List<Libro>) libroDao.findAll();
+            response.getLibroResponse().setLibro(libros);
+            response.setMetadata("Respuesta ok", "00", "Respuesta exitosa");
+        } catch (Exception e) {
+            Log.error("Error al consultar los libros", e.getMessage());
+            response.setMetadata("Respuesta nok", "-1", "Error al consultar los libros");
+            e.getStackTrace();
+            return new ResponseEntity<LibroResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);// Devuelve 500
+        }
+        return new ResponseEntity<LibroResponseRest>(response, HttpStatus.OK);// Devuelve 200
+
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<LibroResponseRest> getLibroById(long id) {
+
+        Log.info("Inicio metodo getLibroById()");
+        LibroResponseRest response = new LibroResponseRest();
+        List<Libro> list = new ArrayList<>();
+        try {
+            Optional<Libro> libro = libroDao.findById(id);
+            if (libro.isPresent()) {
+                list.add(libro.get());
+                response.getLibroResponse().setLibro(list);
+                response.setMetadata("Respuesta ok", "00", "Respuesta exitosa");
+            } else {
+                response.setMetadata("Respuesta nok", "-1", "Libro no encontrado");
+                return new ResponseEntity<LibroResponseRest>(response, HttpStatus.NOT_FOUND);// Devuelve 404
+            }
+        } catch (Exception e) {
+            Log.error("Error al consultar el libro", e.getMessage());
+            response.setMetadata("Respuesta nok", "-1", "Error al consultar el libro por id");
+            e.getStackTrace();
+            return new ResponseEntity<LibroResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);// Devuelve 500
+        }
+        return new ResponseEntity<LibroResponseRest>(response, HttpStatus.OK);// Devuelve 200
+    }
+
+    @Override
+    public ResponseEntity<LibroResponseRest> createLibro(Libro libro) {
+
+        throw new UnsupportedOperationException("Unimplemented method 'createLibro'");
+    }
+
+    @Override
+    public ResponseEntity<LibroResponseRest> updateLibro(Libro libro, long id) {
+
+        throw new UnsupportedOperationException("Unimplemented method 'updateLibro'");
+    }
+
+    @Override
+    public ResponseEntity<LibroResponseRest> deleteLibro(long id) {
+
+        throw new UnsupportedOperationException("Unimplemented method 'deleteLibro'");
+    }
+
+}
