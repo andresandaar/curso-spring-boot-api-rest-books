@@ -72,21 +72,97 @@ public class LibroImplService implements ILibroService {
     }
 
     @Override
+    @Transactional
     public ResponseEntity<LibroResponseRest> createLibro(Libro libro) {
 
-        throw new UnsupportedOperationException("Unimplemented method 'createLibro'");
+        Log.info("Inicio metodo createLibro()");
+        LibroResponseRest response = new LibroResponseRest();
+        List<Libro> list = new ArrayList<>();
+        try {
+            Libro libroGuardado = libroDao.save(libro);
+
+            if (libroGuardado != null) {
+                list.add(libroGuardado);
+                response.getLibroResponse().setLibro(list);
+                response.setMetadata("Respuesta ok", "00", "Libro creado");
+            } else {
+                response.setMetadata("Respuesta nok", "-1", "Libro no creado");
+                return new ResponseEntity<LibroResponseRest>(response, HttpStatus.BAD_REQUEST);// Devuelve 404
+            }
+
+        } catch (Exception e) {
+            Log.error("Error al crear libro", e.getMessage());
+            response.setMetadata("Respuesta nok", "-1", "Error al crear libro");
+            e.getStackTrace();
+            return new ResponseEntity<LibroResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);// Devuelve 500
+        }
+
+        return new ResponseEntity<LibroResponseRest>(response, HttpStatus.OK);// Devuelve 200
     }
 
     @Override
+    @Transactional
     public ResponseEntity<LibroResponseRest> updateLibro(Libro libro, long id) {
 
-        throw new UnsupportedOperationException("Unimplemented method 'updateLibro'");
+        Log.info("Inicio metodo updateLibro()");
+        LibroResponseRest response = new LibroResponseRest();
+        List<Libro> list = new ArrayList<>();
+        try {
+            Optional<Libro> buscarLibro = libroDao.findById(id);
+            if (buscarLibro.isPresent()) {
+
+                buscarLibro.get().setNombre(libro.getNombre());
+                buscarLibro.get().setDescripcion(libro.getDescripcion());
+                buscarLibro.get().setCategoria(libro.getCategoria());
+
+                Libro libroActualizado = libroDao.save(buscarLibro.get());
+                if (libroActualizado != null) {
+                    response.setMetadata("Respuesta ok", "00", "Libro actualizado");
+                    list.add(libroActualizado);
+                    response.getLibroResponse().setLibro(list);
+                } else {
+                    response.setMetadata("Respuesta nok", "-1", "Libro no actualizado");
+                    return new ResponseEntity<LibroResponseRest>(response, HttpStatus.BAD_REQUEST);// Devuelve 40
+                }
+
+            } else {
+                response.setMetadata("Respuesta nok", "-1", "Libro no encontrado");
+                return new ResponseEntity<LibroResponseRest>(response, HttpStatus.NOT_FOUND);// Devuelve 404
+            }
+
+        } catch (Exception e) {
+            Log.error("Error al actualizar el libro", e.getMessage());
+            response.setMetadata("Respuesta nok", "-1", "Error al actualizar el libro");
+            e.getStackTrace();
+            return new ResponseEntity<LibroResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);// Devuelve 500
+        }
+
+        return new ResponseEntity<LibroResponseRest>(response, HttpStatus.OK);// Devuelve 200
     }
 
     @Override
     public ResponseEntity<LibroResponseRest> deleteLibro(long id) {
 
-        throw new UnsupportedOperationException("Unimplemented method 'deleteLibro'");
+        Log.info("Inicio metodo deleteLibro()");
+        LibroResponseRest response = new LibroResponseRest();
+        try {
+            Optional<Libro> libroBuscado = libroDao.findById(id);
+            if (libroBuscado.isPresent()) {
+                libroDao.deleteById(id);
+                response.setMetadata("Respuesta ok", "00", "Libro eliminado");
+
+            } else {
+                response.setMetadata("Respuesta nok", "-1", "Libro no encontrado");
+                return new ResponseEntity<LibroResponseRest>(response, HttpStatus.NOT_FOUND);// Devuelve 404
+            }
+
+        } catch (Exception e) {
+            Log.error("Error al eliminar libro", e.getMessage());
+            response.setMetadata("Respuesta nok", "-1", "Error al eliminar libro");
+            e.getStackTrace();
+            return new ResponseEntity<LibroResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);// Devuelve 500
+        }
+        return new ResponseEntity<LibroResponseRest>(response, HttpStatus.OK);// Devuelve 200
     }
 
 }

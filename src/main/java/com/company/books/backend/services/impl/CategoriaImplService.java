@@ -154,7 +154,7 @@ public class CategoriaImplService implements ICategoriaService {
             }
 
         } catch (Exception e) {
-            Log.error("Error al actualizar categorias", e.getMessage());
+            Log.error("Error al eliminar categorias", e.getMessage());
             response.setMetadata("Respuesta nok", "-1", "Error al eliminar categoria");
             e.getStackTrace();
             return new ResponseEntity<CategoriaResponseRest>(response, HttpStatus.INTERNAL_SERVER_ERROR);// Devuelve 500
