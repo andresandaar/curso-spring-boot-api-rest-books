@@ -16,6 +16,8 @@ import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.company.books.backend.filter.JwtReqFilter;
 @Configuration
@@ -112,4 +114,32 @@ public class ConfigSecurity {
         return http.build();
 
     };
+/*
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/v1/**") // Mapea esta configuración solo para los endpoints en /v1/**
+                        .allowedOrigins("http://localhost:4200") // Permitir solicitudes solo desde localhost:4200
+                        .allowedMethods("GET", "POST", "PUT", "DELETE") // Permitir los métodos GET, POST, PUT, DELETE
+                        .allowedHeaders("*"); // Permitir todos los encabezados
+            }
+        };
+    };
+*/
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**") // Permitir acceso a cualquier endpoint
+                        .allowedOrigins("*") // Permitir solicitudes desde cualquier origen
+                        .allowedMethods("*") // Permitir cualquier método (GET, POST, PUT, DELETE, etc.)
+                        .allowedHeaders("*"); // Permitir todos los encabezados
+            }
+        };
+    }
+
+
 }
