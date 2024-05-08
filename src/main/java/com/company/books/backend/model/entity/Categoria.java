@@ -9,10 +9,21 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "categoria")
+@Table(name = "categorias")
 public class Categoria implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    public Categoria(Long id, String nombre, String descripcion) {
+        super();
+        this.id = id;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+    }
+
+    public Categoria() {
+        super();
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

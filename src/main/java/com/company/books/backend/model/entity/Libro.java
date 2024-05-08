@@ -13,7 +13,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "libro")
+@Table(name = "libros")
 public class Libro implements Serializable {
    
      private static final long serialVersionUID = 2L;
